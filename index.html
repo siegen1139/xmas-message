@@ -1,19 +1,170 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>メリークリスマス</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>3段背景スライド</title>
   <style>
-    body { font-family: system-ui, -apple-system, "Yu Gothic", Meiryo, sans-serif;
-           margin:0; min-height:100vh; display:grid; place-items:center; background:#0b1e33; color:#fff; }
-    .card { max-width:680px; padding:32px; background:#132b4a; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
-    a { color:#a7d8ff; }
+    /* 全体のリセット＆基本レイアウト */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #222;
+      background: #111; /* 背景のベース色（暗め） */
+    }
+
+    /* === 背景3段スライド === */
+    .bg {
+      position: fixed;
+      inset: 0;           /* top:0; right:0; bottom:0; left:0 */
+      z-index: -1;        /* コンテンツの背面に配置 */
+      overflow: hidden;
+    }
+    .row {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 33.333%;
+      overflow: hidden;
+    }
+    .row.row1 { top: 0; }
+    .row.row2 { top: 33.333%; }
+    .row.row3 { top: 66.666%; }
+
+    /* スクロールする帯（同じ並びを2回並べて無限ループを自然に） */
+    .belt {
+      display: flex;
+      width: 200%;                /* 画像列の重複分を含めて2倍幅 */
+      will-change: transform;
+    }
+
+    /* 画像の見え方 */
+    .belt img {
+      height: 100%;
+      width: auto;
+      flex: 0 0 auto;
+      object-fit: cover;
+      filter: brightness(0.85) saturate(1.05); /* 少し落ち着いたトーン */
+    }
+
+    /* アニメーション（1・3段＝左流し／2段＝右流し） */
+    .row1 .belt,
+    .row3 .belt {
+      animation: move-left 30s linear infinite;
+    }
+    .row2 .belt {
+      animation: move-right 35s linear infinite;
+    }
+
+    /* キーフレーム：左流し（-50%まで動かす） */
+    @keyframes move-left {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* キーフレーム：右流し（-50%スタート→0へ戻す） */
+    @keyframes move-right {
+      from { transform: translateX(-50%); }
+      to   { transform: translateX(0); }
+    }
+
+    /* 背景の上に置くメインコンテンツ */
+    main {
+      position: relative;
+      z-index: 1;  /* 背景より上 */
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 4rem 1rem;
+    }
+    .card {
+      max-width: 960px;
+      width: min(90vw, 960px);
+      background: rgb(255 255 255 / 0.82);
+      backdrop-filter: blur(4px);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 12px 40px rgb(0 0 0 / 0.35);
+    }
+    .card h1 {
+      margin: 0 0 0.5rem;
+    }
+    .card p {
+      margin: 0.5rem 0 0;
+      line-height: 1.7;
+    }
+
+    /* モバイルで少し動きをゆっくりにしたいとき */
+    @media (max-width: 640px) {
+      .row1 .belt, .row3 .belt { animation-duration: 40s; }
+      .row2 .belt { animation-duration: 45s; }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>🎄メリークリスマス🎁</h1>
-    大切な日を瑞と過ごせてとても嬉しいです。</p>
-    私の想いが瑞に伝わっていますように…。
+  <!-- 背景：3段スライド -->
+  <div class="bg" aria-hidden="true">
+    <!-- 1段目（左に流れる） -->
+    <div class="row row1">
+      <div class="belt">
+        <!-- セットA -->
+        https://picsum.photos/id/1015/1200/600
+        <img src="https://picsum.photos/id/1025/       https://picsum.photos/id/1035/1200/600
+        https://picsum.photos/id/1045/1200/600
+        httpsum.photos/id/1055/1200/600
+
+        <!-- セットAの複製（途切れなくループするため） -->
+        https://picsum.photos/id/1015/1200/600
+        https://picsum.photos/id/1025/1200/600
+        <img src="https://picsum.photos/id/1035/1200   <img src="https://picsum.photos/id/1045/1200/600ttps://picsum.photos/id/1055/1200/600
+      </div>
+    </div>
+
+    <!-- 2段目（右に流れる） -->
+    <div class="row row2">
+      <div class="belt">
+        <!-- セットB -->
+        https://picsum.photos/id/1065/1200/600
+        https://picsum.photos/id/1075/1200/600
+        <img srcpicsum.photos/id/1084/1200/600
+        https://picsum.photos/id/109/1200/600
+        https://picsum.photos/id/110/1200/600
+
+        <!-- セットBの複製 -->
+        https://picsum.photos/id/1065/1200/600
+        https://picsum.photos/id/1075/1200/600
+        https://picsum.photos/id/1084/1200/600
+        <img src="https://picsum.photos/id/109/1200/600" altrc="https://picsum.photos/id/110/1200/600" alt   </div>
+
+    <!-- 3段目（左に流れる） -->
+    <div class="row row3">
+      <div class="belt">
+        <!-- セットC -->
+        https://picsum.photos/id/111/1200/600
+        https://picsum.photos/id/112/1200/600
+        <img src="https://picsum/113/1200/600
+        https://picsum.photos/id/114/1200/600
+        https://picsum.photos/id/115/1200/600
+
+        <!-- セットCの複製 -->
+        https://picsum.photos/id/111/1200/600
+        https://picsum.photos/id/112/1200/600
+        https://picsum.photos/id/113/1200/600
+        https://picsum.photos/id/114/1200/600
+        https://picsum.photos/id/115/1200/600
+      </div>
+    </div>
+  </div>
+
+  <!-- 背景の上に載せるメイン領域（自由に編集OK） -->
+  <main>
+    <div class="card">
+      <h1>GitHub Pages サンプル</h1>
+      <p>背景に3段のスライドが流れます。上と下は左、真ん中は右に流れる設定です。画像URLはあとで差し替えできます。</p>
+    </div>
+  </main>
+</body>
+</html>
+``
