@@ -75,6 +75,39 @@
     @media (prefers-reduced-motion: reduce) {
       .row .belt { animation: none; transform: none; }
     }
+    
+/* ===== 追加：各段の高さの基準（px）と画像の合わせ方 ===== */
+.bg { 
+  --row-height: 180px;  /* ← 好みの高さに変更可（例：160px / 200px） */
+}
+
+/* 各段の高さを統一＆上下配置 */
+.bg .row { 
+  height: var(--row-height); 
+  overflow: hidden;
+}
+.bg .row1 { top: 0; }
+.bg .row2 { top: var(--row-height); }
+.bg .row3 { top: calc(var(--row-height) * 2); }
+
+/* 継ぎ目を目立たせないなら 0 推奨（お好みで変更） */
+.bg .row .belt { gap: 0; }
+
+/* 画像：アスペクト比維持で“縦幅を段の高さに合わせる” */
+.bg .row img {
+  height: 100%;    /* 縦幅を各段の高さに合わせる */
+  width: auto;     /* 横幅は比率に応じて自動可変 */
+  display: block;  /* 画像下の隙間防止 */
+  object-fit: cover; /* 余白ありでも切り取りなし。隙間ゼロにしたいなら cover */
+}
+
+/* （未定義なら）2段目の右流しアニメーション */
+@keyframes slideRight {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+.row2 .belt { animation: slideRight 40s linear infinite; }
+
   </style>
 </head>
 <body>
