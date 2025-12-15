@@ -2,159 +2,120 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>3段スライド背景</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3段スライド背景 Ver.7</title>
 <style>
-/* ===== リセット ===== */
-html, body {
-  margin: 0;
-  padding: 0;
-}
+html, body { margin:0; padding:0; }
+body { padding:20px; }
 
-/* ===== ページ本文 ===== */
-body {
-  padding: 20px;
-  font-family: system-ui, sans-serif;
-}
-
-/* =================================================
-   背景：3段スライド（画面を縦に3等分）
-================================================= */
 .bg {
   position: fixed;
   inset: 0;
   z-index: -1;
-  overflow: hidden;
+  background-color: #6b76ae;
   pointer-events: none;
-  background: #6b76ae;
-
-  --row-h: 33.333vh;
+  overflow: hidden;
+  --row-height: 33.333vh; /* 画面高さの1/3 */
 }
 
-/* ===== 各段 ===== */
 .row {
   position: absolute;
-  left: 0;
-  right: 0;
-  height: var(--row-h);
+  left:0; right:0;
+  height: var(--row-height);
   overflow: hidden;
 }
 
-.row1 { top: 0; }
-.row2 { top: var(--row-h); }
-.row3 { top: calc(var(--row-h) * 2); }
+.row1 { top:0; }
+.row2 { top: var(--row-height); }
+.row3 { top: calc(var(--row-height)*2); }
 
-/* ===== 横流しベルト ===== */
 .belt {
   display: flex;
-  height: 100%;
+  align-items: center;
+  gap: 0; /* JSで横間隔を設定 */
   will-change: transform;
 }
 
-/* ===== 画像 ===== */
 .belt img {
-  height: 100%;      /* 段の高さに合わせる */
-  width: auto;       /* 比率維持 */
+  height: 99%;       /* 段に対して縦99% */
+  width: auto;       /* 縦横比固定 */
   display: block;
-  object-fit: contain; /* 切り取りなし */
-  opacity: 0.95;
+  object-fit: contain;
 }
 
-/* ===== アニメーション ===== */
-@keyframes slide-left {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
+main { position: relative; z-index:1; }
 
-@keyframes slide-right {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
-}
-
-.row1 .belt,
-.row3 .belt {
-  animation: slide-left 40s linear infinite;
-}
-
-.row2 .belt {
-  animation: slide-right 40s linear infinite;
-}
-
-/* ===== 動き軽減 ===== */
-@media (prefers-reduced-motion: reduce) {
-  .belt {
-    animation: none;
-    transform: none;
-  }
-}
 </style>
 </head>
-
 <body>
 
-<!-- ===== 背景 ===== -->
 <div class="bg" aria-hidden="true">
 
-  <!-- 1段目 -->
   <div class="row row1">
-    <div class="belt">
+    <div class="belt js-loop" data-dir="left">
       <img src="assets/row1/1.png">
       <img src="assets/row1/2.png">
       <img src="assets/row1/3.png">
-      <img src="assets/row1/4.png">
-      <img src="assets/row1/5.png">
-      <!-- 複製 -->
-      <img src="assets/row1/1.png">
-      <img src="assets/row1/2.png">
-      <img src="assets/row1/3.png">
-      <img src="assets/row1/4.png">
-      <img src="assets/row1/5.png">
     </div>
   </div>
 
-  <!-- 2段目 -->
   <div class="row row2">
-    <div class="belt">
-      <img src="assets/row2/6.png">
-      <img src="assets/row2/7.png">
-      <img src="assets/row2/8.png">
-      <img src="assets/row2/9.png">
-      <img src="assets/row2/10.png">
-      <!-- 複製 -->
-      <img src="assets/row2/6.png">
-      <img src="assets/row2/7.png">
-      <img src="assets/row2/8.png">
-      <img src="assets/row2/9.png">
-      <img src="assets/row2/10.png">
+    <div class="belt js-loop" data-dir="right">
+      <img src="assets/row2/4.png">
+      <img src="assets/row2/5.png">
     </div>
   </div>
 
-  <!-- 3段目 -->
   <div class="row row3">
-    <div class="belt">
-      <img src="assets/row3/11.png">
-      <img src="assets/row3/12.png">
-      <img src="assets/row3/13.png">
-      <img src="assets/row3/14.png">
-      <img src="assets/row3/15.png">
-      <!-- 複製 -->
-      <img src="assets/row3/11.png">
-      <img src="assets/row3/12.png">
-      <img src="assets/row3/13.png">
-      <img src="assets/row3/14.png">
-      <img src="assets/row3/15.png">
+    <div class="belt js-loop" data-dir="left">
+      <img src="assets/row3/6.png">
+      <img src="assets/row3/7.png">
+      <img src="assets/row3/8.png">
     </div>
   </div>
 
 </div>
 
-<!-- ===== 本文 ===== -->
 <main>
-  <h1>メッセージ</h1>
-  <p>背景は画面を3等分し、各段で画像が流れます。</p>
-  <p>Ver.6</p>
+  <h1>メッセージ Ver.7</h1>
+  <p>3段背景スライド＋縦横比固定＋横間隔も余白対応</p>
 </main>
+
+<script>
+// 全てのベルトを初期化
+document.querySelectorAll('.js-loop').forEach(belt => {
+  const row = belt.parentElement;
+  const rowHeight = row.clientHeight;
+  const verticalMargin = rowHeight * 0.01; // 上下余白1%
+  
+  // 画像間隔を設定
+  const imgs = belt.querySelectorAll('img');
+  imgs.forEach((img, i) => {
+    img.style.height = rowHeight * 0.99 + 'px';
+    if(i < imgs.length - 1){
+      img.style.marginRight = verticalMargin + 'px';
+    }
+  });
+
+  // ループアニメーション
+  let x = 0;
+  const dir = belt.dataset.dir === 'right' ? 1 : -1;
+  const speed = 0.5; // px/frame
+  const loop = () => {
+    x += speed * dir;
+    const w = belt.scrollWidth / 2; // 半分ループで戻す
+    if(dir < 0 && -x >= w) x = 0;
+    if(dir > 0 && x >= w) x = 0;
+    belt.style.transform = `translateX(${x}px)`;
+    requestAnimationFrame(loop);
+  };
+
+  // 複製してループ対応（画像が少なくてもつなぎ目なし）
+  belt.innerHTML += belt.innerHTML;
+
+  loop();
+});
+</script>
 
 </body>
 </html>
