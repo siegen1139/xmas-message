@@ -127,7 +127,7 @@ window.addEventListener('resize', updateImageSize);
 // ループ処理（時間ベースで一定速度）
 document.querySelectorAll('.js-loop').forEach(belt => {
   const row = belt.parentElement;
-  const dir = belt.dataset.dir === 'right' ? 1 : -1;
+  const dir = belt.dataset.dir === 'right' ? -1 : 1;
   let x = 0;
   const duration = 40 * 1000; // 1周の時間（ミリ秒）
 
