@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>3段スライド背景 Ver.15.6</title>
+<title>3段スライド背景 Ver.15.5</title>
 <style>
 html, body { margin:0; padding:0; }
 body { padding:20px; }
@@ -15,7 +15,7 @@ body { padding:20px; }
   background-color: #6b76ae;
   pointer-events: none;
   overflow: hidden;
-  --row-height: 33.333vh; /* 初期値 */
+  --row-height: 33.333vh;
 }
 
 .row {
@@ -42,6 +42,7 @@ body { padding:20px; }
 }
 
 .belt img {
+  height: 99%;  /* 段の高さに相対 */
   width: auto;
   display: block;
   object-fit: contain;
@@ -90,8 +91,8 @@ main { position: relative; z-index:1; }
 </div>
 
 <main>
-  <h1>メッセージ Ver.15.6</h1>
-  <p>段の高さを正確に固定・全段無限ループ・40秒1周</p>
+  <h1>メッセージ Ver.15.5</h1>
+  <p>完全レスポンシブ・全段無限ループ・40秒1周</p>
 </main>
 
 <script>
@@ -100,7 +101,7 @@ const duration = 40000; // 40秒で1周
 function setupLoop(belt) {
   const dir = belt.dataset.dir === 'right' ? 1 : -1;
 
-  // 複製前の1周幅を取得
+  // 複製前の1周幅を計算
   const images = Array.from(belt.querySelectorAll('img'));
   let originalWidth = 0;
   images.forEach(img => originalWidth += img.offsetWidth);
@@ -119,25 +120,16 @@ function setupLoop(belt) {
   loop();
 }
 
-function updateRowHeights() {
-  document.querySelectorAll('.row').forEach(row => {
-    const rowHeight = row.clientHeight;
-    row.querySelectorAll('img').forEach(img => {
-      img.style.height = rowHeight * 0.99 + 'px';
-    });
-  });
-}
-
-// 初回
-updateRowHeights();
+// 初回セットアップ
 document.querySelectorAll('.js-loop').forEach(belt => setupLoop(belt));
 
-// resize 時も段の高さを維持して belt 再構築
+// 画面サイズ変更時に belt を再構築
 window.addEventListener('resize', () => {
-  updateRowHeights();
   document.querySelectorAll('.js-loop').forEach(belt => {
-    const html = belt.innerHTML; // 元の1周分だけ残す
-    belt.innerHTML = html;
+    // belt をリセット
+    const row = belt.parentElement;
+    const html = belt.innerHTML;
+    belt.innerHTML = html; // 元の1周分だけ残す
     belt.style.transform = 'translateX(0)';
     setupLoop(belt);
   });
