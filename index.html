@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>3段スライド背景 Ver.14</title>
+<title>3段スライド背景 Ver.15</title>
+
 <style>
 html, body { margin:0; padding:0; }
 body { padding:20px; }
@@ -15,7 +16,7 @@ body { padding:20px; }
   background-color: #6b76ae;
   pointer-events: none;
   overflow: hidden;
-  --row-height: 33.333vh; /* 画面高さの1/3 */
+  --row-height: 33.333vh;
 }
 
 .row {
@@ -31,22 +32,27 @@ body { padding:20px; }
 
 .belt {
   display: flex;
-  align-items: center; /* 中央揃えで余白を上下均等に */
-  gap: 0; /* 横間隔はそのままなし */
+  align-items: center;
+  gap: 0;
   will-change: transform;
 }
 
+/* ★ Ver.15：2段目だけ右詰め */
+.row2 .belt {
+  justify-content: flex-end;
+}
+
 .belt img {
-  height: 99%;       /* 段に対して縦99% */
-  width: auto;       /* 縦横比固定 */
+  height: 99%;
+  width: auto;
   display: block;
   object-fit: contain;
 }
 
 main { position: relative; z-index:1; }
-
 </style>
 </head>
+
 <body>
 
 <div class="bg" aria-hidden="true">
@@ -54,94 +60,71 @@ main { position: relative; z-index:1; }
   <!-- 1段目（左に流れる） -->
   <div class="row row1">
     <div class="belt js-loop" data-dir="left">
-      <img src="assets/row1/1.png" alt="Image 1">
-      <img src="assets/row1/2.png" alt="Image 2">
-      <img src="assets/row1/3.png" alt="Image 3">
-      <img src="assets/row1/4.png" alt="Image 4">
-      <img src="assets/row1/5.png" alt="Image 5">
+      <img src="assets/row1/1.png">
+      <img src="assets/row1/2.png">
+      <img src="assets/row1/3.png">
+      <img src="assets/row1/4.png">
+      <img src="assets/row1/5.png">
     </div>
   </div>
 
-  <!-- 2段目（右に流れる） -->
+  <!-- 2段目（右に流れる・右詰め） -->
   <div class="row row2">
     <div class="belt js-loop" data-dir="right">
-      <img src="assets/row2/6.png" alt="Image 6">
-      <img src="assets/row2/7.png" alt="Image 7">
-      <img src="assets/row2/8.png" alt="Image 8">
-      <img src="assets/row2/9.png" alt="Image 9">
-      <img src="assets/row2/10.png" alt="Image 10">
-      <!-- 2周目（ループ対応） -->
-      <img src="assets/row2/6.png" alt="Image 6">
-      <img src="assets/row2/7.png" alt="Image 7">
-      <img src="assets/row2/8.png" alt="Image 8">
-      <img src="assets/row2/9.png" alt="Image 9">
-      <img src="assets/row2/10.png" alt="Image 10">
+      <img src="assets/row2/6.png">
+      <img src="assets/row2/7.png">
+      <img src="assets/row2/8.png">
+      <img src="assets/row2/9.png">
+      <img src="assets/row2/10.png">
     </div>
   </div>
 
   <!-- 3段目（左に流れる） -->
   <div class="row row3">
     <div class="belt js-loop" data-dir="left">
-      <img src="assets/row3/11.png" alt="Image 11">
-      <img src="assets/row3/12.png" alt="Image 12">
-      <img src="assets/row3/13.png" alt="Image 13">
-      <img src="assets/row3/14.png" alt="Image 14">
-      <img src="assets/row3/15.png" alt="Image 15">
-      <!-- 2周目（ループ対応） -->
-      <img src="assets/row3/11.png" alt="Image 11">
-      <img src="assets/row3/12.png" alt="Image 12">
-      <img src="assets/row3/13.png" alt="Image 13">
-      <img src="assets/row3/14.png" alt="Image 14">
-      <img src="assets/row3/15.png" alt="Image 15">
+      <img src="assets/row3/11.png">
+      <img src="assets/row3/12.png">
+      <img src="assets/row3/13.png">
+      <img src="assets/row3/14.png">
+      <img src="assets/row3/15.png">
     </div>
   </div>
 
 </div>
 
 <main>
-  <h1>メッセージ Ver.14</h1>
-  <p>ロマンチックなスライドショー（時間ベースで一定速度）</p>
+  <h1>メッセージ Ver.15</h1>
+  <p>中段のみ右詰め</p>
 </main>
 
 <script>
-// 画面サイズ変更時に画像の高さを調整
-function updateImageSize() {
-  document.querySelectorAll('.js-loop').forEach(belt => {
-    const row = belt.parentElement;
-    const rowHeight = row.clientHeight;
-    
-    // 画像高さを99%に設定
-    const imgs = belt.querySelectorAll('img');
-    imgs.forEach(img => {
-      img.style.height = rowHeight * 0.99 + 'px'; // 縦99%
-    });
-  });
-}
-
-// 初回の読み込み時にサイズ調整
-updateImageSize();
-
-// 画面サイズ変更時にリサイズを適用
-window.addEventListener('resize', updateImageSize);
-
-// ループ処理（時間ベースで一定速度）
 document.querySelectorAll('.js-loop').forEach(belt => {
-  const row = belt.parentElement;
   const dir = belt.dataset.dir === 'right' ? 1 : -1;
-  let x = 0;
-  const duration = 40 * 1000; // 1周の時間（ミリ秒）
+  const duration = 40000;
 
-  const loop = () => {
-    const elapsed = (performance.now() % duration) / duration; // 経過時間を割合に変換
-    const w = belt.scrollWidth / 2; // 画像が1周する幅
-    x = elapsed * w * dir; // 時間ベースで移動量を決定
+  belt.innerHTML += belt.innerHTML;
 
-    belt.style.transform = `translateX(${x}px)`;
-    requestAnimationFrame(loop);
+  let baseWidth;
+
+  const update = () => {
+    baseWidth = belt.scrollWidth / 2;
   };
 
-  // ループ対応（画像が少なくてもつなぎ目なし）
-  belt.innerHTML += belt.innerHTML;
+  window.addEventListener('resize', update);
+  update();
+
+  const loop = () => {
+    const t = (performance.now() / duration) % 1;
+    const offset = t * baseWidth;
+
+    if (dir === -1) {
+      belt.style.transform = `translateX(${-offset}px)`;
+    } else {
+      belt.style.transform = `translateX(${offset - baseWidth}px)`;
+    }
+
+    requestAnimationFrame(loop);
+  };
 
   loop();
 });
