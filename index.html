@@ -48,7 +48,7 @@ body { padding:20px; }
   object-fit: contain;
 }
 
-main { position: relative; z-index:1; }
+main { position: relative; z-index:1; color:#fff; }
 </style>
 </head>
 <body>
@@ -101,23 +101,40 @@ const duration = 40000; // 40秒で1周
 function setupLoop(belt) {
   const dir = belt.dataset.dir === 'right' ? 1 : -1;
 
-  // 複製前の1周幅を計算
-  const images = Array.from(belt.querySelectorAll('img'));
-  let originalWidth = 0;
-  images.forEach(img => originalWidth += img.offsetWidth);
-
-  // 横幅が画面幅の2倍以上になるまで複製
-  while (belt.scrollWidth < window.innerWidth * 2) {
-    belt.innerHTML += belt.innerHTML;
+  // 元HTMLを保存
+  if (!belt.dataset.original) {
+    belt.dataset.original = belt.innerHTML;
+  } else {
+    belt.innerHTML = belt.dataset.original;
   }
 
-  const loop = () => {
-    const t = (performance.now() % duration) / duration;
-    const x = t * originalWidth * dir;
-    belt.style.transform = `translateX(${x}px)`;
-    requestAnimationFrame(loop);
-  };
-  loop();
+  const images = Array.from(belt.querySelectorAll('img'));
+
+  // すべての画像が読み込まれるのを待つ
+  const promises = images.map(img => {
+    if (img.complete) return Promise.resolve();
+    return new Promise(resolve => img.onload = resolve);
+  });
+
+  Promise.all(promises).then(() => {
+    // 複製前の1周幅を計算
+    let originalWidth = 0;
+    images.forEach(img => originalWidth += img.offsetWidth);
+
+    // 横幅が画面幅の2倍以上になるまで複製
+    while (belt.scrollWidth < window.innerWidth * 2) {
+      belt.appendChild(belt.cloneNode(true));
+    }
+
+    // アニメーションループ
+    const loop = () => {
+      const t = (performance.now() % duration) / duration;
+      const x = t * originalWidth * dir;
+      belt.style.transform = `translateX(${x}px)`;
+      requestAnimationFrame(loop);
+    };
+    loop();
+  });
 }
 
 // 初回セットアップ
@@ -126,10 +143,6 @@ document.querySelectorAll('.js-loop').forEach(belt => setupLoop(belt));
 // 画面サイズ変更時に belt を再構築
 window.addEventListener('resize', () => {
   document.querySelectorAll('.js-loop').forEach(belt => {
-    // belt をリセット
-    const row = belt.parentElement;
-    const html = belt.innerHTML;
-    belt.innerHTML = html; // 元の1周分だけ残す
     belt.style.transform = 'translateX(0)';
     setupLoop(belt);
   });
