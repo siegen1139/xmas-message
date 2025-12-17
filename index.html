@@ -2,52 +2,49 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>3段スライド背景 Ver.15.1.1 + transform修正版</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>スムーズループ背景</title>
 <style>
-html, body { margin:0; padding:0; }
-body { padding:20px; }
+  html, body { margin: 0; padding: 0; }
+  body { padding: 20px; }
 
-.bg {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-color: #6b76ae;
-  pointer-events: none;
-  overflow: hidden;
-  --row-height: 33.333vh;
-}
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-color: #6b76ae;
+    pointer-events: none;
+    overflow: hidden;
+    --row-height: 33.333vh;
+  }
 
-.row {
-  position: absolute;
-  left:0; right:0;
-  height: var(--row-height);
-  overflow: hidden;
-}
+  .row {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: var(--row-height);
+    overflow: hidden;
+    display: flex;
+  }
 
-.row1 { top:0; }
-.row2 { top: var(--row-height); }
-.row3 { top: calc(var(--row-height)*2); }
+  .row1 { top: 0; }
+  .row2 { top: var(--row-height); }
+  .row3 { top: calc(var(--row-height) * 2); }
 
-.belt {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  will-change: transform;
-}
+  .belt {
+    display: flex;
+    align-items: center;
+    will-change: transform;
+  }
 
-.row2 .belt {
-  justify-content: flex-end; /* 中段のみ右詰め */
-}
+  .belt img {
+    height: 99%;
+    width: auto;
+    display: block;
+    object-fit: contain;
+  }
 
-.belt img {
-  height: 99%;
-  width: auto;
-  display: block;
-  object-fit: contain;
-}
-
-main { position: relative; z-index:1; }
+  main { position: relative; z-index: 1; }
 </style>
 </head>
 <body>
@@ -65,7 +62,7 @@ main { position: relative; z-index:1; }
     </div>
   </div>
 
-  <!-- 2段目（右詰め・右向き） -->
+  <!-- 2段目 -->
   <div class="row row2">
     <div class="belt js-loop" data-dir="right">
       <img src="assets/row2/6.png" alt="6">
@@ -90,8 +87,8 @@ main { position: relative; z-index:1; }
 </div>
 
 <main>
-  <h1>メッセージ Ver.15.1.1 + transform修正版</h1>
-  <p>中段も右詰め・右向きで滑らかに流れる</p>
+  <h1>スムーズループ背景</h1>
+  <p>どんなに横長のディスプレイでも余白なしでループします。</p>
 </main>
 
 <script>
@@ -108,22 +105,34 @@ function updateImageSize() {
 updateImageSize();
 window.addEventListener('resize', updateImageSize);
 
-// ループ処理（transform部分だけ Ver.15.2 方式に変更）
+// ループ処理（画像を繰り返す方式で修正）
 document.querySelectorAll('.js-loop').forEach(belt => {
   const dir = belt.dataset.dir === 'right' ? 1 : -1;
   const duration = 40000;
 
-  belt.innerHTML += belt.innerHTML; // 複製して無限ループ
-  const w = belt.scrollWidth / 2;
+  // 画像を複製して無限ループ
+  const images = belt.querySelectorAll('img');
+  images.forEach(img => belt.appendChild(img.cloneNode(true))); // 画像を複製
+
+  // belt の幅を計算
+  const updateBeltWidth = () => {
+    let totalWidth = 0;
+    belt.querySelectorAll('img').forEach(img => {
+      totalWidth += img.offsetWidth; // 画像の合計幅を計算
+    });
+    belt.style.width = totalWidth + 'px'; // belt の幅を設定
+  };
+  
+  updateBeltWidth();
+  window.addEventListener('resize', updateBeltWidth);
 
   const loop = () => {
     const t = (performance.now() % duration) / duration;
+    const scrollWidth = belt.scrollWidth / 2; // belt の実際の幅の半分
+    const x = t * scrollWidth * dir; // スクロールする位置
+    belt.style.transform = `translateX(${x}px)`; // 横移動させる
 
-    // ← ここを Ver.15.2 方式に上書き
-    const x = t * w * dir;
-    belt.style.transform = `translateX(${x}px)`;
-
-    requestAnimationFrame(loop);
+    requestAnimationFrame(loop); // アニメーションをループ
   };
 
   loop();
