@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>3段スライド背景 Ver.15.4</title>
+<title>3段スライド背景 Ver.15.2</title>
 <style>
 html, body { margin:0; padding:0; }
 body { padding:20px; }
@@ -55,7 +55,7 @@ main { position: relative; z-index:1; }
 
 <div class="bg" aria-hidden="true">
 
-  <!-- 1段目 -->
+  <!-- 1段目（左に流れる） -->
   <div class="row row1">
     <div class="belt js-loop" data-dir="left">
       <img src="assets/row1/1.png" alt="Image 1">
@@ -66,7 +66,7 @@ main { position: relative; z-index:1; }
     </div>
   </div>
 
-  <!-- 2段目（右詰め） -->
+  <!-- 2段目（右に流れる・右詰め） -->
   <div class="row row2">
     <div class="belt js-loop" data-dir="right">
       <img src="assets/row2/6.png" alt="Image 6">
@@ -77,7 +77,7 @@ main { position: relative; z-index:1; }
     </div>
   </div>
 
-  <!-- 3段目 -->
+  <!-- 3段目（左に流れる） -->
   <div class="row row3">
     <div class="belt js-loop" data-dir="left">
       <img src="assets/row3/11.png" alt="Image 11">
@@ -91,8 +91,8 @@ main { position: relative; z-index:1; }
 </div>
 
 <main>
-  <h1>メッセージ Ver.15.4</h1>
-  <p>中段速度修正済み・全段無限ループ・40秒1周</p>
+  <h1>メッセージ Ver.15.2</h1>
+  <p>全段1周で無限ループ</p>
 </main>
 
 <script>
@@ -106,29 +106,27 @@ function updateImageSize() {
     });
   });
 }
+
 updateImageSize();
 window.addEventListener('resize', updateImageSize);
 
-// 無限ループ処理（複製後も速度一定）
+// ループ処理（時間ベース）
 document.querySelectorAll('.js-loop').forEach(belt => {
   const dir = belt.dataset.dir === 'right' ? 1 : -1;
-  const duration = 40 * 1000; // 40秒で1周
+  const duration = 40 * 1000;
 
-  // 複製前のHTML上1周幅を取得
-  const images = Array.from(belt.querySelectorAll('img'));
-  const originalWidth = images.reduce((sum, img) => sum + img.offsetWidth, 0);
+  // HTML上は1周分だけ、JSで複製して無限ループ
+  belt.innerHTML += belt.innerHTML;
 
-  // 横幅が画面幅の2倍以上になるまで複製
-  while (belt.scrollWidth < window.innerWidth * 2) {
-    belt.innerHTML += belt.innerHTML;
-  }
+  const w = belt.scrollWidth / 2;
 
   const loop = () => {
     const t = (performance.now() % duration) / duration;
-    const x = t * originalWidth * dir; // 複製前の幅で移動距離計算
+    const x = t * w * dir;
     belt.style.transform = `translateX(${x}px)`;
     requestAnimationFrame(loop);
   };
+
   loop();
 });
 </script>
