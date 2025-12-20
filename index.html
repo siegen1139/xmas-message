@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ver.6.1.1</title>
+  <title>ver.6.1.2</title>
   <!-- ver.6.1: 中段(row2)のみ「右から並べて右へ流す」に対応 -->
   <style>
     html, body { margin: 0; padding: 0; }
@@ -71,7 +71,7 @@
 
   <!-- 2段目（右へ）※ver.6.1：右から並べて右へ流れる -->
   <div class="row row2">
-    <div class="belt js-loop" data-dir="right">
+    <div class="belt js-loop" data-dir="right" data-start="right">
       <img src="assets/row2/6.png" alt="6">
       <img src="assets/row2/7.png" alt="7">
       <img src="assets/row2/8.png" alt="8">
@@ -95,7 +95,7 @@
 
 <main>
   <h1>背景調整中</h1>
-  <p>ver.6.1.1</p>
+  <p>ver.6.1.2</p>
 </main>
 
 <script>
@@ -119,6 +119,8 @@ document.querySelectorAll('.js-loop').forEach(belt => {
   const dir = belt.dataset.dir === 'right' ? 1 : -1; // right=1, left=-1
   const duration = 40000; // ミリ秒（速度調整可）
 
+    const start = belt.dataset.start || 'left'; // data-start="right" なら右端基準
+
   // 画像を複製（1セット + もう1セット）
   const originals = belt.querySelectorAll('img');
   originals.forEach(img => belt.appendChild(img.cloneNode(true)));
@@ -127,10 +129,23 @@ document.querySelectorAll('.js-loop').forEach(belt => {
     const t = (performance.now() % duration) / duration; // 0..1
     const L = belt.scrollWidth / 2;                       // 1セット分の長さ
 
-    // translateX は常に [-L, 0) に収めるのがコツ
-    // 左向き（dir = -1）： 0 → -L
-    // 右向き（dir =  1）：-L →  0（右端スタートの見え方になる）
-    const x = (dir === -1) ? (-t * L) : (-L + t * L);
+       const vw = belt.parentElement.clientWidth;             // 表示領域の幅（row）
+    
+ let x;
+    if (dir === -1) {
+      // 左向き（そのまま）： 0 → -L
+      x = -t * L;
+    } else {
+      // 右向き：開始位置を指定（left/right）
+      // - left  基準： 0 から開始（従来）
+      // - right 基準： 1周目の「右端」とビュー右端を一致（startX = -(L - vw)）
+      const startX = (start === 'right') ? -(L - vw) : 0;
+      const delta  =  t * L;     // 経過分の移動量（右へ）
+      const raw    = startX + delta;
+
+      // シームレス化：常に [-L, 0) にラップして継ぎ目を消す
+      x = ((raw % L) + L) % L - L;
+    }
 
     belt.style.transform = `translateX(${x}px)`;
     requestAnimationFrame(loop);
