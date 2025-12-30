@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns='http://www.w3.org/2005/Atom' xmlns:apps='http://schemas.google.com/apps/2006'>
+	<title>Mail Filters</title>
+	<id>tag:mail.google.com,2008:filters:z0000001767079490942*6878727954021851462</id>
+	<updated>2025-12-30T07:46:21Z</updated>
+	<author>
+		<name>柏木万里</name>
+		<email>2201115022xv@cyber-u.ac.jp</email>
+	</author>
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<id>tag:mail.google.com,2008:filter:z0000001767079490942*6878727954021851462</id>
+		<updated>2025-12-30T07:46:21Z</updated>
+		<content></content>
+		<apps:property name='subject' value='スタディスキル実践 OR JavaScriptフレームワークによるWebプログラミング OR デジタル社会のコミュニケーション演習 OR Webアプリケーション開発'/>
+		<apps:property name='label' value='科目メール'/>
+		<apps:property name='shouldMarkAsRead' value='true'/>
+		<apps:property name='shouldArchive' value='true'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+</feed>
